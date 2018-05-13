@@ -22,6 +22,7 @@ int decode (const STM_Type);
 int decode (const LDRL_Type);
 int decode (const ADD_SP_Type);
 
+// decode what type data is
 /* This function is complete, no modifications needed */
 Thumb_Types decode (const ALL_Types data) {
   if (data.type.alu.instr.class_type.type_check == ALU_TYPE) {
@@ -58,6 +59,7 @@ Thumb_Types decode (const ALL_Types data) {
     return ADD_SP;
   }
   else {
+    // purpose of this?
     if (data.type.ld_st.instr.class_type.opA == LD_ST_REG_OPA) {
     }
     else if (data.type.ld_st.instr.class_type.opA == LD_ST_IMM_OPA) {
@@ -79,6 +81,10 @@ Thumb_Types decode (const ALL_Types data) {
 ALU_Ops decode (const ALU_Type data) {
   if (data.instr.lsli.op == ALU_LSLI_OP) {
     // 315: insert code here to print lsls instruction
+    // logical shift left immediate?
+    if (opts.instrs) {
+      cout << "lsli r" << data.instr.lsli.rd  << ", r" << data.instr.lsli.rm << ", r" << data.instr.lsli.imm << endl;
+    }
     return ALU_LSLI;
   }
   else if (data.instr.addr.op == ALU_ADDR_OP) {
@@ -89,17 +95,25 @@ ALU_Ops decode (const ALU_Type data) {
   }
   else if (data.instr.subr.op == ALU_SUBR_OP) {
     // 315: insert code here to print subs instruction
+    if (opts.instrs) { 
+      cout << "subtracts r" << data.instr.subr.rd  << ", r" << data.instr.subr.rn << ", r" << data.instr.subr.rm << endl;
+    }
     return ALU_SUBR;
   }
   else if (data.instr.add3i.op == ALU_ADD3I_OP) {
     // complete
     if (opts.instrs) { 
+       // data.instr.add3i.rd returns register destination #
+       // adds r5, r2, #5
       cout << "adds r" << data.instr.add3i.rd << ", r" << data.instr.add3i.rn << ", #" << data.instr.add3i.imm << endl;
     }
     return ALU_ADD3I;
   }
   else if (data.instr.sub3i.op == ALU_SUB3I_OP) {
     // 315: insert code here to print subs instruction
+    if (opts.instrs) { 
+      cout << "subtracts r" << data.instr.sub3i.rd << ", r" << data.instr.sub3i.rn << ", #" << data.instr.sub3i.imm << endl;
+    }
     return ALU_SUB3I;
   }
   else if (data.instr.add8i.op == ALU_ADD8I_OP) {
@@ -111,6 +125,9 @@ ALU_Ops decode (const ALU_Type data) {
   }
   else if (data.instr.sub8i.op == ALU_SUB8I_OP) {
     // 315: insert code here to print subs instruction
+    if (opts.instrs) { 
+      cout << "subtracts r" << data.instr.sub8i.rdn << ", #" << setbase(10) << data.instr.sub8i.imm << endl;
+    }
     return ALU_SUB8I;
   }
   else if (data.instr.cmp.op == ALU_CMP_OP) { 
@@ -133,6 +150,10 @@ ALU_Ops decode (const ALU_Type data) {
 DP_Ops decode (const DP_Type data) {
   if (data.instr.DP_Instr.op == DP_CMP) {
     // 315: insert code here to print cmp instruction
+    if (opts.instrs) {
+       // cannot find what is used
+      cout << "dp cmp" << setbase(10) << data.instr.DP_Instr.
+    }
     return DP_CMP;
   }
   else {
@@ -170,6 +191,9 @@ SP_Ops decode (const SP_Type data) {
   }
   else if (data.instr.add.op == 0) {
     // Here you'll need to SP_ADD similar to above
+    if (opts.instrs) {
+      cout << "sp_add, r" << setbase(10) << data.instr.add.
+    }
     return SP_ADD;
   }
   else if (data.instr.cmp.op == 1) {
