@@ -16,6 +16,7 @@ Caches caches(0);
 // in addition to the ones given below, specifically for the unconditional
 // branch instruction, which has an 11-bit immediate field
 unsigned int signExtend16to32ui(short i) {
+  
   return static_cast<unsigned int>(static_cast<int>(i));
 }
 
@@ -99,30 +100,69 @@ static int checkCondition(unsigned short cond) {
       }
       break;
     case NE:
+      if (flags.Z == 0) {
+        return TRUE;
+      }
       break;
     case CS:
+      if (flags.C == 1) {
+        return TRUE;
+      }
       break;
     case CC:
+      if (flags.C == 0) {
+        return TRUE;
+      }
       break;
     case MI:
+      if (flags.N == 1) {
+        return TRUE;
+      }
       break;
     case PL:
+      if (flags.N == 0) {
+        return TRUE;
+      }
       break;
     case VS:
+      if (flags.V == 1) {
+        return TRUE;
+      }
       break;
     case VC:
+      if (flags.V == 0) {
+        return TRUE;
+      }
       break;
     case HI:
+      if (flags.C == 1 && flags.Z == 0) {
+        return TRUE;
+      }
       break;
     case LS:
+      if (flags.C == 0 && flags.Z == 1) {
+        return TRUE;
+      }
       break;
     case GE:
+      if (flags.N == flags.V) {
+        return TRUE;
+      }
       break;
     case LT:
+      if (flags.N != flags.V) {
+        return TRUE;
+      }
       break;
     case GT:
+      if (flags.Z == 0 && flags.N == flags.V) {
+        return TRUE;
+      }
       break;
     case LE:
+      if (flags.Z == 1 && flags.N != flags.V) {
+        return TRUE;
+      }
       break;
     case AL:
       return TRUE;
