@@ -224,9 +224,18 @@ void execute() {
         case ALU_ADDR:
           // needs stats and flags
           rf.write(alu.instr.addr.rd, rf[alu.instr.addr.rn] + rf[alu.instr.addr.rm]);
+          setCarryOverFlow(rf[alu.instr.addr.rn], alu.instr.addr.imm, OF_ADD);
+          setNegativeZero(rf[alu.instr.addr.rd], 32);
+          stats.numRegReads += 1;
+          stats.numRegWrites += 1;
+          
           break;
         case ALU_SUBR:
           rf.write(alu.instr.subr.rd, rf[alu.instr.subr.rn] + rf[alu.instr.addr.rm])
+          setCarryOverFlow(rf[alu.instr.subr.rn], alu.instr.subr.imm, OF_SUB);
+          setNegativeZero(rf[alu.instr.subr.rd], 32);
+          stats.numRegReads += 1;
+          stats.numRegWrites += 1;
           break;
         case ALU_ADD3I:
           // needs stats and flags
