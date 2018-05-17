@@ -231,23 +231,44 @@ void execute() {
         case ALU_ADD3I:
           // needs stats and flags
           rf.write(alu.instr.add3i.rd, rf[alu.instr.add3i.rn] + alu.instr.add3i.imm);
+          setCarryOverFlow(rf[alu.instr.add3i.rn], alu.instr.add3i.imm, OF_ADD);
+          setNegativeZero(rf[alu.instr.add3i.rd], 32);
+          stats.numRegReads += 1;
+          stats.numRegWrites += 1;
           break;
         case ALU_SUB3I:
           rf.write(alu.instr.sub3i.rd, rf[alu.instr.sub3i.rn] + alu.instr.sub3i.imm);
+          setCarryOverFlow(rf[alu.instr.sub3i.rn], alu.instr.sub3i.imm, OF_SUB);
+          setNegativeZero(rf[alu.instr.sub3i.rd], 32);
+          stats.numRegReads += 1;
+          stats.numRegWrites += 1;
           break;
         case ALU_MOV:
           // needs stats and flags
           rf.write(alu.instr.mov.rdn, alu.instr.mov.imm);
+          setNegativeZero(rf[alu.instr.mov.rdn], 32);
+          stats.numRegWrites += 1;
           break;
         case ALU_CMP:
           rf.write(alu.instr.cmp.rdn, alu.instr.cmp.imm);
+          setCarryOverFlow(rf[alu.instr.cmp.rdn], alu.instr.cmp.imm, OF_SUB);
+          setNegativeZero(rf[alu.instr.cmp.rdn] - alu.instr.cmp.imm, 32);
+          stats.numRegReads += 1;
           break;
         case ALU_ADD8I:
           // needs stats and flags
           rf.write(alu.instr.add8i.rdn, rf[alu.instr.add8i.rdn] + alu.instr.add8i.imm);
+          setCarryOverFlow(rf[alu.instr.add8i.rn], alu.instr.add8i.imm, OF_ADD);
+          setNegativeZero(rf[alu.instr.add8i.rdn], 32);
+          stats.numRegReads += 1;
+          stats.numRegWrites += 1;
           break;
         case ALU_SUB8I:
           rf.write(alu.instr.sub8i.rdn, rf[alu.instr.sub8i.rdn] + alu.instr.sub8i.imm);
+          setCarryOverFlow(rf[alu.instr.sub8i.rn], alu.instr.sub8i.imm, OF_SUB);
+          setNegativeZero(rf[alu.instr.sub8i.rdn], 32);
+          stats.numRegReads += 1;
+          stats.numRegWrites += 1;
           break;
         default:
           cout << "instruction not implemented" << endl;
