@@ -83,7 +83,7 @@ ALU_Ops decode (const ALU_Type data) {
     // 315: insert code here to print lsls instruction
     // logical shift left immediate?
     if (opts.instrs) {
-      cout << "lsli r" << data.instr.lsli.rd  << ", r" << data.instr.lsli.rm << ", r" << data.instr.lsli.imm << endl;
+      cout << "lsli r" << data.instr.lsli.rd  << ", r" << data.instr.lsli.rm << ", #" << data.instr.lsli.imm << endl;
     }
     return ALU_LSLI;
   }
