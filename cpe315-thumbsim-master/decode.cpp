@@ -152,7 +152,7 @@ DP_Ops decode (const DP_Type data) {
     // 315: insert code here to print cmp instruction
     if (opts.instrs) {
        // cannot find what is used
-      cout << "dp cmp" << setbase(10) << data.instr.DP_Instr.
+      cout << "cmp r" << data.instr.cmp.rdn << ", r" << setbase(10) << data.instr.cmp.rm << endl;
     }
     return DP_CMP;
   }
