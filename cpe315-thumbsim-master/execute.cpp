@@ -90,6 +90,21 @@ void setCarryOverflow (int num1, int num2, OFType oftype) {
   }
 }
 
+void setNegativeZero (int num, int size) {
+  if (num == 0){
+    flags.Z = 1;
+    flags.N = 0;
+  }
+  else if (num < 0){
+    flags.Z = 0;
+    flags.N = 1;
+  }
+  else{
+    flags.Z = 0;
+    flags.N = 0;
+  }
+}
+
 // CPE 315: You're given the code for evaluating BEQ, and you'll need to 
 // complete the rest of these conditions. See Page 208 of the armv7 manual
 static int checkCondition(unsigned short cond) {
