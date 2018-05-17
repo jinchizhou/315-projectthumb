@@ -224,9 +224,11 @@ void execute() {
         case ALU_ADDR:
           // needs stats and flags
           rf.write(alu.instr.addr.rd, rf[alu.instr.addr.rn] + rf[alu.instr.addr.rm]);
+          stats.numRegReads += 2;
           break;
         case ALU_SUBR:
           rf.write(alu.instr.subr.rd, rf[alu.instr.subr.rn] + rf[alu.instr.addr.rm])
+          stats.numRegReads += 2;
           break;
         case ALU_ADD3I:
           // needs stats and flags
@@ -361,6 +363,9 @@ void execute() {
       switch(misc_ops) {
         case MISC_PUSH:
           // need to implement
+          n = 16;
+          list = (misc.instr.push.m<<(n-2)) | misc.instr.push.reg_list;
+          addr = SP - 4*bitCount(list, n);
           break;
         case MISC_POP:
           // need to implement
