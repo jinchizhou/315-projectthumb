@@ -90,6 +90,21 @@ void setCarryOverflow (int num1, int num2, OFType oftype) {
   }
 }
 
+void setNegativeZero (int num, int size) {
+  if (num == 0){
+    flags.Z = 1;
+    flags.N = 0;
+  }
+  else if (num < 0){
+    flags.Z = 0;
+    flags.N = 1;
+  }
+  else{
+    flags.Z = 0;
+    flags.N = 0;
+  }
+}
+
 // CPE 315: You're given the code for evaluating BEQ, and you'll need to 
 // complete the rest of these conditions. See Page 208 of the armv7 manual
 static int checkCondition(unsigned short cond) {
@@ -230,6 +245,18 @@ void execute() {
         case ALU_SUBR:
           rf.write(alu.instr.subr.rd, rf[alu.instr.subr.rn] + rf[alu.instr.addr.rm])
           stats.numRegReads += 2;
+          setCarryOverFlow(rf[alu.instr.addr.rn], alu.instr.addr.imm, OF_ADD);
+          setNegativeZero(rf[alu.instr.addr.rd], 32);
+          stats.numRegReads += 1;
+          stats.numRegWrites += 1;
+          
+          break;
+        case ALU_SUBR:
+          rf.write(alu.instr.subr.rd, rf[alu.instr.subr.rn] + rf[alu.instr.addr.rm])
+          setCarryOverFlow(rf[alu.instr.subr.rn], alu.instr.subr.imm, OF_SUB);
+          setNegativeZero(rf[alu.instr.subr.rd], 32);
+          stats.numRegReads += 1;
+          stats.numRegWrites += 1;
           break;
         case ALU_ADD3I:
           // needs stats and flags
