@@ -367,21 +367,29 @@ void execute() {
           // functionally complete, needs stats
           addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
           dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt]);
+          stats.NumRegReads += 1;
+          //stats.NumRegReads += 2;
+          //considered 1 or 2?
           break;
         case LDRI:
           // functionally complete, needs stats
           addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
           rf.write(ld_st.instr.ld_st_imm.rt, dmem[addr]);
+          stats.NumRegWrites += 1
           break;
         case STRR:
           // need to implement
           addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm];
           dmem.write(addr, rf[ld_st_instr.ld_st_reg.rt]);
+          stats.NumRegReads += 1
+          stats.NumRegWrites +=
           break;
         case LDRR:
           // need to implement
           addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm];
           rf.write(ld_st.instr.ld_st_reg.rt, dmem[addr]);
+          stats.NumRegWrites +=
+          stats.NumRegReads += 1
           break;
         case STRBI:
           // need to implement
