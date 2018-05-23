@@ -239,7 +239,7 @@ void execute() {
         case ALU_ADDR:
           // needs stats and flags
           rf.write(alu.instr.addr.rd, rf[alu.instr.addr.rn] + rf[alu.instr.addr.rm]);
-          
+          stats.numRegWrites += 1;
           stats.numRegReads += 2;
           break;
         case ALU_SUBR:
