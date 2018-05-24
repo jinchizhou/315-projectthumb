@@ -1,6 +1,6 @@
 #include "thumbsim.hpp"
 // These are just the register NUMBERS
-#define PC_REG 15  
+#define PC_REG 15
 #define LR_REG 14
 #define SP_REG 13
 
@@ -11,6 +11,8 @@
 
 Stats stats;
 Caches caches(0);
+
+// Changing machine state (dmem, rf, pc)
 
 // CPE 315: you'll need to implement a custom sign-extension function
 // in addition to the ones given below, specifically for the unconditional
@@ -105,6 +107,7 @@ void setNegativeZero (int num, int size) {
   }
 }
 
+// done
 // CPE 315: You're given the code for evaluating BEQ, and you'll need to 
 // complete the rest of these conditions. See Page 208 of the armv7 manual
 static int checkCondition(unsigned short cond) {
@@ -247,10 +250,11 @@ void execute() {
           stats.numRegReads += 2;
           setCarryOverFlow(rf[alu.instr.addr.rn], alu.instr.addr.imm, OF_ADD);
           setNegativeZero(rf[alu.instr.addr.rd], 32);
+          // why do they read again? Checking if overflow
           stats.numRegReads += 1;
           stats.numRegWrites += 1;
-          
           break;
+        // one of these are wrong
         case ALU_SUBR:
           rf.write(alu.instr.subr.rd, rf[alu.instr.subr.rn] + rf[alu.instr.addr.rm])
           setCarryOverFlow(rf[alu.instr.subr.rn], alu.instr.subr.imm, OF_SUB);
