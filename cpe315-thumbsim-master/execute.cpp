@@ -238,28 +238,24 @@ void execute() {
       switch(add_ops) {
         case ALU_LSLI:
           rf.write(alu.instr.lsli.rd, rf[alu.instr.lsli.rm] + alu.instr.lsli.imm)
+          setCarryOverFlow(rf[alu.instr.lsli.rm], alu.instr.lsli.imm, OF_SHIFT);
+          setNegativeZero(rf[alu.instr.lsli.rd], 32);
+          stats.numRegReads += 1;
+          stats.numRegWrites += 1;
           break;
         case ALU_ADDR:
           // needs stats and flags
           rf.write(alu.instr.addr.rd, rf[alu.instr.addr.rn] + rf[alu.instr.addr.rm]);
-          stats.numRegWrites += 1;
-          stats.numRegReads += 2;
-          break;
-        case ALU_SUBR:
-          rf.write(alu.instr.subr.rd, rf[alu.instr.subr.rn] + rf[alu.instr.addr.rm])
-          stats.numRegReads += 2;
-          setCarryOverFlow(rf[alu.instr.addr.rn], alu.instr.addr.imm, OF_ADD);
+          setCarryOverFlow(rf[alu.instr.addr.rn], rf[alu.instr.addr.rm], OF_ADD);
           setNegativeZero(rf[alu.instr.addr.rd], 32);
-          // why do they read again? Checking if overflow
-          stats.numRegReads += 1;
           stats.numRegWrites += 1;
+          stats.numRegReads += 2;
           break;
-        // one of these are wrong
         case ALU_SUBR:
-          rf.write(alu.instr.subr.rd, rf[alu.instr.subr.rn] + rf[alu.instr.addr.rm])
+          rf.write(alu.instr.subr.rd, rf[alu.instr.subr.rn] + rf[alu.instr.subr.rm])
           setCarryOverFlow(rf[alu.instr.subr.rn], alu.instr.subr.imm, OF_SUB);
           setNegativeZero(rf[alu.instr.subr.rd], 32);
-          stats.numRegReads += 1;
+          stats.numRegReads += 2;
           stats.numRegWrites += 1;
           break;
         case ALU_ADD3I:
@@ -355,6 +351,7 @@ void execute() {
         case SP_MOV:
           // needs stats and flags
           rf.write((sp.instr.mov.d << 3 ) | sp.instr.mov.rd, rf[sp.instr.mov.rm]);
+          // 
           break;
         case SP_ADD:
         case SP_CMP:
@@ -379,27 +376,29 @@ void execute() {
           // functionally complete, needs stats
           addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
           rf.write(ld_st.instr.ld_st_imm.rt, dmem[addr]);
-          stats.NumRegWrites += 1
+          stats.NumRegReads += 1;
+          stats.NumRegWrites += 1;
           break;
         case STRR:
           // need to implement
           addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm];
           dmem.write(addr, rf[ld_st_instr.ld_st_reg.rt]);
-          stats.NumRegReads += 1
-          stats.NumRegWrites +=
+          stats.NumRegReads += 1;
+          stats.NumRegWrites += 
           break;
         case LDRR:
           // need to implement
           addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm];
           rf.write(ld_st.instr.ld_st_reg.rt, dmem[addr]);
-          stats.NumRegWrites +=
-          stats.NumRegReads += 1
+          stats.NumRegWrites += 1;
+          stats.NumRegReads += 2;
           break;
         case STRBI:
           // need to implement
           // need stack pointer location
-          addr = ld_st.instr.ld_st_imm.sp + rf[ld_st_instr.ld_st_imm.imm*4];
+          `addr = ld_st.instr.ld_st_imm.sp + rf[ld_st_instr.ld_st_imm.imm*4];
           dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt]);
+
           break;
         case LDRBI:
           // need to implement
@@ -434,10 +433,14 @@ void execute() {
         case MISC_SUB:
           // functionally complete, needs stats
           rf.write(SP_REG, SP - (misc.instr.sub.imm*4));
+          stats.numRegReads += 1;
+          stats.numRegWrites += 1;
           break;
         case MISC_ADD:
           // functionally complete, needs stats
           rf.write(SP_REG, SP + (misc.instr.add.imm*4));
+          stats.numRegReads += 1;
+          stats.numRegWrites += 1;
           break;
       }
       break;
