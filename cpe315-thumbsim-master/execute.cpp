@@ -351,14 +351,28 @@ void execute() {
       switch(sp_ops) {
         case SP_MOV:
           // needs stats and flags
+          // mov sp, r1
+          // mov sp, #1
+          // mov r1, sp
           rf.write((sp.instr.mov.d << 3 ) | sp.instr.mov.rd, rf[sp.instr.mov.rm]);
-          // 
+          // depends on immed or not
+          stats.numRegWrites += 1;
+          stats.numRegReads += 1;
           break;
         case SP_ADD:
           // add sp, r1, r2
           // add r1, sp, r2
           // add r1, r2, sp
           // immediates allowed?
+          // need to call sp
+          // check if immediate or reg?
+          rf.write(sp.instr.add.rd, rf[sp.instr.add.rn] + rf[sp.instr.add.rm]);
+          setCarryOverFlow(rf[sp.instr.add.rn], rf[sp.instr.add.rm], OF_ADD);
+          setNegativeZero(rf[sp.instr.add.rd], 32);
+          // depends on immed or not
+          stats.numRegWrites += 1;
+          stats.numRegReads += 2;
+          
         case SP_CMP:
           // need to implement these
           // no idea what to do, use sp specific
