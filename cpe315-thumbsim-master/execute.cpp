@@ -280,7 +280,8 @@ void execute() {
           stats.numRegWrites += 1;
           break;
         case ALU_CMP:
-          rf.write(alu.instr.cmp.rdn, alu.instr.cmp.imm);
+          // cmp immediate, why no registers?
+          //rf.write(alu.instr.cmp.rdn, alu.instr.cmp.imm);
           setCarryOverFlow(rf[alu.instr.cmp.rdn], alu.instr.cmp.imm, OF_SUB);
           setNegativeZero(rf[alu.instr.cmp.rdn] - alu.instr.cmp.imm, 32);
           stats.numRegReads += 1;
@@ -354,13 +355,20 @@ void execute() {
           // 
           break;
         case SP_ADD:
+          // add sp, r1, r2
+          // add r1, sp, r2
+          // add r1, r2, sp
+          // immediates allowed?
         case SP_CMP:
           // need to implement these
           // no idea what to do, use sp specific
           // cmp sp, r1 or cmp r1, sp
+          // no immediates
           int diff = rf[sp.instr.cmp.rn] - rf[sp.instr.cmp.rm];
-          setCarryOverFlow(rf[sp.instr.cmp.rn], rf[sp.instr.cmp.rm], OF_CMP);
+          setCarryOverFlow(rf[sp.instr.cmp.rn], rf[sp.instr.cmp.rm], OF_SUB);
           setNegativeZero(diff, 32);
+          stats.numRegReads += 2;
+          
           break;
       }
       break;
