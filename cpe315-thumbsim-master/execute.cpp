@@ -356,6 +356,11 @@ void execute() {
         case SP_ADD:
         case SP_CMP:
           // need to implement these
+          // no idea what to do, use sp specific
+          // cmp sp, r1 or cmp r1, sp
+          int diff = rf[sp.instr.cmp.rn] - rf[sp.instr.cmp.rm];
+          setCarryOverFlow(rf[sp.instr.cmp.rn], rf[sp.instr.cmp.rm], OF_CMP);
+          setNegativeZero(diff, 32);
           break;
       }
       break;
