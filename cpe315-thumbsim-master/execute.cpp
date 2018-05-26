@@ -368,9 +368,7 @@ void execute() {
           // functionally complete, needs stats
           addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
           dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt]);
-          stats.NumRegReads += 1;
-          //stats.NumRegReads += 2;
-          //considered 1 or 2?
+          stats.NumRegReads += 2;
           break;
         case LDRI:
           // functionally complete, needs stats
@@ -383,8 +381,7 @@ void execute() {
           // need to implement
           addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm];
           dmem.write(addr, rf[ld_st_instr.ld_st_reg.rt]);
-          stats.NumRegReads += 1;
-          stats.NumRegWrites += 
+          stats.NumRegReads += 3;
           break;
         case LDRR:
           // need to implement
@@ -396,23 +393,27 @@ void execute() {
         case STRBI:
           // need to implement
           // need stack pointer location
-          `addr = ld_st.instr.ld_st_imm.sp + rf[ld_st_instr.ld_st_imm.imm*4];
+          // stores a single byte only; ignore rest
+          addr = ld_st.instr.ld_st_imm.sp + rf[ld_st_instr.ld_st_imm.imm*4];
           dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt]);
 
           break;
         case LDRBI:
           // need to implement
-          //  need location of stack pointer
+          //  need location of stack pointer?
+          //  loads single byte only; ignore rest
           addr = ld_st.instr.ld_st_imm.sp + rf[ld_st_instr.ld_st_imm.imm*4];
           rf.write(ld_st.instr.ld_st_imm.rt, dmem[addr])
           break;
         case STRBR:
           // need to implement
+          // stores single byte
           addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm];
           dmem.write(addr, rf[ld_st.instr.ld_st_reg.rt]);
           break;
         case LDRBR:
           // need to implement
+          // loads single byte
           addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm];
           rf.write(ld_st.instr.ld_st_reg.rt, dmem[addr])
           break;
@@ -449,6 +450,7 @@ void execute() {
       // Once you've completed the checkCondition function,
       // this should work for all your conditional branches.
       // needs stats
+      // change PC?
       if (checkCondition(cond.instr.b.cond)){
         rf.write(PC_REG, PC + 2 * signExtend8to32ui(cond.instr.b.imm) + 2);
       }
@@ -456,15 +458,18 @@ void execute() {
     case UNCOND:
       // Essentially the same as the conditional branches, but with no
       // condition check, and an 11-bit immediate field
+      // change PC
       decode(uncond);
       break;
     case LDM:
       decode(ldm);
       // need to implement
+      // loads more than 1 word
       break;
     case STM:
       decode(stm);
       // need to implement
+      // stores more than 1 word
       break;
     case LDRL:
       // This instruction is complete, nothing needed
