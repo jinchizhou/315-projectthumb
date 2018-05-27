@@ -419,30 +419,38 @@ void execute() {
           break;
         case STRBI:
           // need to implement
-          // need stack pointer location
           // stores a single byte only; ignore rest
+          // str r1, [r3, #4]
+          char byte = getByte();
           addr = ld_st.instr.ld_st_imm.sp + rf[ld_st_instr.ld_st_imm.imm*4];
           dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt]);
-
+          stats.NumRegReads += 2;
           break;
         case LDRBI:
           // need to implement
-          //  need location of stack pointer?
           //  loads single byte only; ignore rest
+          // ldr r1, [r3, #4]
           addr = ld_st.instr.ld_st_imm.sp + rf[ld_st_instr.ld_st_imm.imm*4];
           rf.write(ld_st.instr.ld_st_imm.rt, dmem[addr])
+          stats.NumRegReads += 1;
+          stats.NumRegWrites += 1;
           break;
         case STRBR:
           // need to implement
           // stores single byte
+          // str r1, [r2, r3]
           addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm];
           dmem.write(addr, rf[ld_st.instr.ld_st_reg.rt]);
+          stats.NumRegReads += 3;
           break;
         case LDRBR:
           // need to implement
           // loads single byte
+          // ldr r1, [r2, r3]
           addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm];
           rf.write(ld_st.instr.ld_st_reg.rt, dmem[addr])
+          stats.NumRegReads += 2;
+          stats.NumRegWrites += 1;
           break;
       }
       break;
@@ -452,11 +460,47 @@ void execute() {
         case MISC_PUSH:
           // need to implement
           n = 16;
+          // gets reg_list of registers that are pushed in form 
+          // 0001 0101
           list = (misc.instr.push.m<<(n-2)) | misc.instr.push.reg_list;
+          // going all the way down first
           addr = SP - 4*bitCount(list, n);
+          for (i = 0, mask = 1; i < n; i++, mask<<=1){
+            if (list&mask) {
+              caches.access(addr);
+              dmem.write(addr, rf[i]);
+              addr +=4;
+              stats.numRegReads += 1;
+              stats.numMemWrites += 1;
+            }
+          }
+          // doesnt seem right
+          //rf.write(SP_REG, SP - 4*bitCount(list, n));
+          stats.NumRegReads += 1;
+          stats.numRegWrites += 1;
+          // update SP
+          rf[SP_REG] = SP - 4*bitCount(list, n);
           break;
         case MISC_POP:
           // need to implement
+          //n = 16;
+          list = (misc.instr.pop.m<<(n-2)) | misc.instr.pop.reg_list;
+          addr = SP + 4*bitCount(list, n);
+          // is opposite of push bc reading last reg first
+          for (i = 15, mask = 2^15; i >=0; i++, mask>>=1){
+            if (list&mask){
+              // access data on stack part of cache?
+              caches.access(addr);
+              // write to register whatever is in stack address?
+              rf.write(rf[i], );
+              addr -=4;
+              stats.numRegWrites += 1;
+              stats.numMemReads += 1;
+            }
+          }
+          stats.NumRegReads += 1;
+          stats.NumRegWrites += 1;
+          rf[SP_REG] = SP + 4*bitCount(list, n);
           break;
         case MISC_SUB:
           // functionally complete, needs stats
@@ -490,6 +534,7 @@ void execute() {
       break;
     case LDM:
       decode(ldm);
+      // similar to pop but how to do many words?
       // need to implement
       // loads more than 1 word
       break;
