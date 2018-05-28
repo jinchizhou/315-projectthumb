@@ -521,6 +521,7 @@ void execute() {
       // Once you've completed the checkCondition function,
       // this should work for all your conditional branches.
       // needs stats
+      // no idea which stats
       // change PC?
       if (checkCondition(cond.instr.b.cond)){
         rf.write(PC_REG, PC + 2 * signExtend8to32ui(cond.instr.b.imm) + 2);
@@ -531,6 +532,10 @@ void execute() {
       // condition check, and an 11-bit immediate field
       // change PC
       decode(uncond);
+      // if op is 11100 == 28, then its b
+      if (uncond.instr.b.op == 28){
+         rf.write(PC_REG, PC + 2 * signExtend8to32ui(uncond.instr.b.imm) + 2);
+      }
       break;
     case LDM:
       decode(ldm);
