@@ -483,7 +483,7 @@ void execute() {
           break;
         case MISC_POP:
           // need to implement
-          //n = 16;
+          n = 16;
           list = (misc.instr.pop.m<<(n-2)) | misc.instr.pop.reg_list;
           addr = SP + 4*bitCount(list, n);
           // is opposite of push bc reading last reg first
@@ -492,7 +492,7 @@ void execute() {
               // access data on stack part of cache?
               caches.access(addr);
               // write to register whatever is in stack address?
-              rf.write(rf[i], );
+              rf.write(rf[i], rf[addr]);
               addr -=4;
               stats.numRegWrites += 1;
               stats.numMemReads += 1;
@@ -542,6 +542,26 @@ void execute() {
       // similar to pop but how to do many words?
       // need to implement
       // loads more than 1 word
+      n = 16;
+      list = (ldm.instr.ldm.rn<<(n-2)) | ldm.instr.ldm.reg_list;
+      addr = SP + 4*bitCount(list, n);
+      // is opposite of push bc reading last reg first
+      for (i = 15, mask = 2^15; i >=0; i++, mask>>=1){
+         if (list&mask){
+         // access data on stack part of cache?
+         // pop consecutive memory location data to register from rn
+         // putting data at location in register then decrementing?
+            caches.access(addr);
+            // write to register whatever is in stack address?
+            rf.write(rf[i], rf[addr]);
+            addr -=4;
+            stats.numRegWrites += 1;
+            stats.numMemReads += 1;
+         }
+      }
+      stats.NumRegReads += 1;
+      stats.NumRegWrites += 1;
+      rf[SP_REG] = SP + 4*bitCount(list, n);
       break;
     case STM:
       decode(stm);
@@ -571,8 +591,11 @@ void execute() {
       break;
     case ADD_SP:
       // needs stats
+      // manipulates SP?
       decode(addsp);
       rf.write(addsp.instr.add.rd, SP + (addsp.instr.add.imm*4));
+      stats.numRegWrites++;
+      stats.numRegReads+=1; // or 2?
       break;
     default:
       cout << "[ERROR] Unknown Instruction to be executed" << endl;
