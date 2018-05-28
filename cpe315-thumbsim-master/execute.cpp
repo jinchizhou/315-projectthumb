@@ -567,6 +567,28 @@ void execute() {
       decode(stm);
       // need to implement
       // stores more than 1 word
+      n = 16;
+      // gets reg_list of registers that are pushed in form 
+      // 0001 0101
+      list = (stm.instr.stm.rn<<(n-2)) | stm.instr.stm.reg_list;
+      // going all the way down first
+      addr = SP - 4*bitCount(list, n);
+      for (i = 0, mask = 1; i < n; i++, mask<<=1){
+         if (list&mask) {
+            // stores multiple words at current location to register
+            caches.access(addr);
+            dmem.write(addr, rf[i]);
+            addr +=4;
+            stats.numRegReads += 1;
+            stats.numMemWrites += 1;
+         }
+      }
+      // doesnt seem right
+      //rf.write(SP_REG, SP - 4*bitCount(list, n));
+      stats.NumRegReads += 1;
+      stats.numRegWrites += 1;
+      // update SP
+      rf[SP_REG] = SP - 4*bitCount(list, n);
       break;
     case LDRL:
       // This instruction is complete, nothing needed
