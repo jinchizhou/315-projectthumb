@@ -26,6 +26,10 @@ unsigned int signExtend8to32ui(char i) {
   return static_cast<unsigned int>(static_cast<int>(i));
 }
 
+unsigned int signExtend11to32ui(short i) {
+  return static_cast<unsigned int>(static_cast<int>(i));
+}
+
 // This is the global object you'll use to store condition codes N,Z,V,C
 // Set these bits appropriately in execute below.
 ASPR flags;
@@ -474,33 +478,30 @@ void execute() {
               stats.numMemWrites += 1;
             }
           }
-          // doesnt seem right
-          //rf.write(SP_REG, SP - 4*bitCount(list, n));
+          rf.write(SP_REG, SP - 4*bitCount(list, n));
           stats.NumRegReads += 1;
           stats.numRegWrites += 1;
-          // update SP
-          rf[SP_REG] = SP - 4*bitCount(list, n);
           break;
         case MISC_POP:
           // need to implement
           n = 16;
-          list = (misc.instr.pop.m<<(n-2)) | misc.instr.pop.reg_list;
-          addr = SP + 4*bitCount(list, n);
+          list = (misc.instr.pop.p<<(n-2)) | misc.instr.pop.reg_list;
+          addr = SP;
           // is opposite of push bc reading last reg first
-          for (i = 15, mask = 2^15; i >=0; i++, mask>>=1){
+          for (i = 0, mask = 1; i < n; i++, mask<<=1){
             if (list&mask){
               // access data on stack part of cache?
               caches.access(addr);
               // write to register whatever is in stack address?
               rf.write(rf[i], rf[addr]);
-              addr -=4;
+              addr +=4;
               stats.numRegWrites += 1;
               stats.numMemReads += 1;
             }
           }
           stats.NumRegReads += 1;
           stats.NumRegWrites += 1;
-          rf[SP_REG] = SP + 4*bitCount(list, n);
+          rf.write(SP_REG, SP + 4*bitCount(list, n));
           break;
         case MISC_SUB:
           // functionally complete, needs stats
@@ -533,20 +534,18 @@ void execute() {
       // change PC
       decode(uncond);
       // if op is 11100 == 28, then its b
-      if (uncond.instr.b.op == 28){
-         rf.write(PC_REG, PC + 2 * signExtend8to32ui(uncond.instr.b.imm) + 2);
-      }
+      rf.write(PC_REG, PC + 2 * signExtend11to32ui(uncond.instr.b.imm) + 2);
       break;
     case LDM:
       decode(ldm);
       // similar to pop but how to do many words?
       // need to implement
       // loads more than 1 word
-      n = 16;
-      list = (ldm.instr.ldm.rn<<(n-2)) | ldm.instr.ldm.reg_list;
-      addr = SP + 4*bitCount(list, n);
+      n = 8;
+      list = ldm.instr.ldm.reg_list;
+      addr = ldm.instr.ldm.rn;
       // is opposite of push bc reading last reg first
-      for (i = 15, mask = 2^15; i >=0; i++, mask>>=1){
+      for (i = 0, mask = 1; i < n; i++, mask<<=1){
          if (list&mask){
          // access data on stack part of cache?
          // pop consecutive memory location data to register from rn
@@ -554,31 +553,29 @@ void execute() {
             caches.access(addr);
             // write to register whatever is in stack address?
             rf.write(rf[i], rf[addr]);
-            addr -=4;
+            addr +=4;
             stats.numRegWrites += 1;
             stats.numMemReads += 1;
          }
       }
       stats.NumRegReads += 1;
-      stats.NumRegWrites += 1;
-      rf[SP_REG] = SP + 4*bitCount(list, n);
       break;
     case STM:
       decode(stm);
       // need to implement
       // stores more than 1 word
-      n = 16;
+      n = 8;
       // gets reg_list of registers that are pushed in form 
       // 0001 0101
-      list = (stm.instr.stm.rn<<(n-2)) | stm.instr.stm.reg_list;
+      list = stm.instr.stm.reg_list;
       // going all the way down first
-      addr = SP - 4*bitCount(list, n);
+      addr = stm.instr.stm.rn;
       for (i = 0, mask = 1; i < n; i++, mask<<=1){
          if (list&mask) {
             // stores multiple words at current location to register
             caches.access(addr);
             dmem.write(addr, rf[i]);
-            addr +=4;
+            addr -=4;
             stats.numRegReads += 1;
             stats.numMemWrites += 1;
          }
@@ -614,8 +611,9 @@ void execute() {
     case ADD_SP:
       // needs stats
       // manipulates SP?
+      // only add imm
       decode(addsp);
-      rf.write(addsp.instr.add.rd, SP + (addsp.instr.add.imm*4));
+      rf.write(SP_REG, SP + (addsp.instr.add.imm*4));
       stats.numRegWrites++;
       stats.numRegReads+=1; // or 2?
       break;
