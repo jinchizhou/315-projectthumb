@@ -18,15 +18,10 @@ Caches caches(0);
 // in addition to the ones given below, specifically for the unconditional
 // branch instruction, which has an 11-bit immediate field
 unsigned int signExtend16to32ui(short i) {
-  
   return static_cast<unsigned int>(static_cast<int>(i));
 }
 
 unsigned int signExtend8to32ui(char i) {
-  return static_cast<unsigned int>(static_cast<int>(i));
-}
-
-unsigned int signExtend11to32ui(short i) {
   return static_cast<unsigned int>(static_cast<int>(i));
 }
 
@@ -534,7 +529,7 @@ void execute() {
       // change PC
       decode(uncond);
       // if op is 11100 == 28, then its b
-      rf.write(PC_REG, PC + 2 * signExtend11to32ui(uncond.instr.b.imm) + 2);
+      rf.write(PC_REG, PC + 2 * signExtend16to32ui(uncond.instr.b.imm) + 2);
       break;
     case LDM:
       decode(ldm);
