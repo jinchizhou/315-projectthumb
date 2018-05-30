@@ -151,7 +151,7 @@ DP_Ops decode (const DP_Type data) {
     // 315: insert code here to print cmp instruction
     if (opts.instrs) {
        // cannot find what is used
-      cout << "cmp r" << data.instr.cmp.rdn << ", r" << setbase(10) << data.instr.cmp.rm << endl;
+      cout << "cmp r" << data.instr.DP_Instr.rdn << ", r" << setbase(10) << data.instr.DP_Instr.rm << endl;
     }
     return DP_CMP;
   }
@@ -208,19 +208,18 @@ SP_Ops decode (const SP_Type data) {
   else if (data.instr.cmp.op == 1) {
     // Here you'll need to SP_CMP similar to above
     // cmp r5, r13
-    // cmp r5, #4
     // cmp r5, r12
      if(opts.instrs){
         if(data.instr.cmp.d){
            // greater than r7 is used
            // no such thing is D, there is N but it is empty
-           cout << "cmp r" << setbase(10) << (8+data.instr.cmp.rd) << " r" << setbase(10) << data.instr.cmp.rm << endl
+           cout << "cmp r" << setbase(10) << (8+data.instr.cmp.rd) << " r" << setbase(10) << data.instr.cmp.rm << endl;
         }
-        else if(data.instr.cmp.imm){
-           cout << "cmp r" << setbase(10) << (data.instr.cmp.rd) << " #" << setbase(10) << data.instr.cmp.imm << endl
-        }
+        //else if(data.instr.cmp.imm){
+           //cout << "cmp r" << setbase(10) << (data.instr.cmp.rd) << " #" << setbase(10) << data.instr.cmp.imm << endl;
+        //}
         else{
-           cout << "cmp r" << setbase(10) << (data.instr.cmp.rd) << " r" << setbase(10) << data.instr.cmp.rm << endl
+           cout << "cmp r" << setbase(10) << (data.instr.cmp.rd) << " r" << setbase(10) << data.instr.cmp.rm << endl;
         }
      }
     return SP_CMP;
@@ -236,28 +235,28 @@ LD_ST_Ops decode (const LD_ST_Type data) {
     if (data.instr.class_type.opB == LD_ST_OPB_LDRB) {
       // 315: write code to print ldrb
       if(opts.instrs){
-         cout << "LDR r" << setbase(10) << data.instr.ld_st_reg.rt << " [r" << setbase(10) << data.instr.ld_st_reg.rn << " r" << setbase(10) << data.instr.ld_st_reg.rm << "]" << endl
+         cout << "LDR r" << setbase(10) << data.instr.ld_st_reg.rt << " [r" << setbase(10) << data.instr.ld_st_reg.rn << " r" << setbase(10) << data.instr.ld_st_reg.rm << "]" << endl;
       }
       return LDRBR;
     }
     else if (data.instr.class_type.opB == LD_ST_OPB_STRB) {
       // 315: write code to print strb
       if(opts.instrs){
-         cout << "STR r" << setbase(10) << data.instr.ld_st_reg.rt << " [r" << setbase(10) << data.instr.ld_st_reg.rn << " r" << setbase(10) << data.instr.ld_st_reg.rm << "]" << endl
+         cout << "STR r" << setbase(10) << data.instr.ld_st_reg.rt << " [r" << setbase(10) << data.instr.ld_st_reg.rn << " r" << setbase(10) << data.instr.ld_st_reg.rm << "]" << endl;
       }
       return STRBR;
     }
     else if (data.instr.class_type.opB == LD_ST_OPB_LDR) {
-0      // 315: write code to print ldr
+      // 315: write code to print ldr
       if(opts.instrs){
-         cout << "LDR r" << setbase(10) << data.instr.ld_st_reg.rt << " [r" << setbase(10) << data.instr.ld_st_reg.rn << " r" << setbase(10) << data.instr.ld_st_reg.rm << "]" << endl
+         cout << "LDR r" << setbase(10) << data.instr.ld_st_reg.rt << " [r" << setbase(10) << data.instr.ld_st_reg.rn << " r" << setbase(10) << data.instr.ld_st_reg.rm << "]" << endl;
       }
       return LDRR;
     }
     else if (data.instr.class_type.opB == LD_ST_OPB_STR) {
       // 315: write code to print str
       if(opts.instrs){
-         cout << "STR r" << setbase(10) << data.instr.ld_st_reg.rt << " [r" << setbase(10) << data.instr.ld_st_reg.rn << " r" << setbase(10) << data.instr.ld_st_reg.rm << "]" << endl
+         cout << "STR r" << setbase(10) << data.instr.ld_st_reg.rt << " [r" << setbase(10) << data.instr.ld_st_reg.rn << " r" << setbase(10) << data.instr.ld_st_reg.rm << "]" << endl;
       }
       return STRR;
     }
@@ -489,7 +488,7 @@ int decode (const LDM_Type data) {
   // 315: add code to print ldm 
   // unsure how to print reg_list
   if (opts.instrs) {
-    cout << "ldm r" << data.instr.ldm.rn << " " << data.instr.ldm.reg_list << endl
+    cout << "ldm r" << data.instr.ldm.rn << " " << data.instr.ldm.reg_list << endl;
   }
   return LDM;
 }
@@ -498,7 +497,7 @@ int decode (const STM_Type data) {
   // 315: add code to print ldm 
   // unsure how to print reg_list
   if (opts.instrs) {
-    cout << "stm r" << data.instr.stm.rn << " " << data.instr.stm.reg_list << endl
+    cout << "stm r" << data.instr.stm.rn << " " << data.instr.stm.reg_list << endl;
 
   }
   return STM;
@@ -507,7 +506,7 @@ int decode (const STM_Type data) {
 int decode (const LDRL_Type data) {
   // 315: add code to print ldr
   if (opts.instrs) {
-    cout << "ldrl r" << data.inst.ldrl.rt << ", #" << data.instr.ldrl.imm*4 << endl
+    cout << "ldrl r" << data.instr.ldrl.rt << ", #" << data.instr.ldrl.imm*4 << endl;
   }
   return LDRL;
 }
