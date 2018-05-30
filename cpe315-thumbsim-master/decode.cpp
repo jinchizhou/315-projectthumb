@@ -88,14 +88,14 @@ ALU_Ops decode (const ALU_Type data) {
   }
   else if (data.instr.addr.op == ALU_ADDR_OP) {
     if (opts.instrs) { 
-      cout << "adds r" << data.instr.addr.rd  << ", r" << data.instr.addr.rn << ", r" << data.instr.addr.rm << endl;
+      cout << "add r" << data.instr.addr.rd  << ", r" << data.instr.addr.rn << ", r" << data.instr.addr.rm << endl;
     }
     return ALU_ADDR;
   }
   else if (data.instr.subr.op == ALU_SUBR_OP) {
     // 315: insert code here to print subs instruction
     if (opts.instrs) { 
-      cout << "subs r" << data.instr.subr.rd  << ", r" << data.instr.subr.rn << ", r" << data.instr.subr.rm << endl;
+      cout << "sub r" << data.instr.subr.rd  << ", r" << data.instr.subr.rn << ", r" << data.instr.subr.rm << endl;
     }
     return ALU_SUBR;
   }
@@ -104,7 +104,7 @@ ALU_Ops decode (const ALU_Type data) {
     if (opts.instrs) { 
        // data.instr.add3i.rd returns register destination #
        // adds r5, r2, #5
-      cout << "adds r" << data.instr.add3i.rd << ", r" << data.instr.add3i.rn << ", #" << data.instr.add3i.imm << endl;
+      cout << "add r" << data.instr.add3i.rd << ", r" << data.instr.add3i.rn << ", #" << data.instr.add3i.imm << endl;
     }
     return ALU_ADD3I;
   }
@@ -118,7 +118,7 @@ ALU_Ops decode (const ALU_Type data) {
   else if (data.instr.add8i.op == ALU_ADD8I_OP) {
     // complete
     if (opts.instrs) { 
-      cout << "adds r" << data.instr.add8i.rdn << ", #" << setbase(10) << data.instr.add8i.imm << endl;
+      cout << "add r" << data.instr.add8i.rdn << ", #" << setbase(10) << data.instr.add8i.imm << endl;
     }
     return ALU_ADD8I;
   }
@@ -139,7 +139,7 @@ ALU_Ops decode (const ALU_Type data) {
   else if (data.instr.mov.op == ALU_MOV_OP) { 
     // complete
     if (opts.instrs) { 
-      cout << "movs r" << data.instr.mov.rdn << ", #" << setbase(10) << (data.instr.mov.imm) << endl;
+      cout << "mov r" << data.instr.mov.rdn << ", #" << setbase(10) << (data.instr.mov.imm) << endl;
     }
     return ALU_MOV;
   }
