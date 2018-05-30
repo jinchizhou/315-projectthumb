@@ -275,7 +275,7 @@ void execute() {
         case ALU_MOV:
           // needs stats and flags
           rf.write(alu.instr.mov.rdn, alu.instr.mov.imm);
-          setNegativeZero(rf[alu.instr.mov.rdn], 32);
+          //setNegativeZero(rf[alu.instr.mov.rdn], 32);
           stats.numRegWrites += 1;
           break;
         case ALU_CMP:
@@ -395,6 +395,7 @@ void execute() {
           addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
           dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt]);
           stats.NumRegReads += 2;
+          stats.NumMemWrites++;
           break;
         case LDRI:
           // functionally complete, needs stats
@@ -402,12 +403,14 @@ void execute() {
           rf.write(ld_st.instr.ld_st_imm.rt, dmem[addr]);
           stats.NumRegReads += 1;
           stats.NumRegWrites += 1;
+          stats.NumMemReads++;
           break;
         case STRR:
           // need to implement
           addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm];
           dmem.write(addr, rf[ld_st_instr.ld_st_reg.rt]);
           stats.NumRegReads += 3;
+          stats.NumMemWrites++;
           break;
         case LDRR:
           // need to implement
@@ -415,6 +418,7 @@ void execute() {
           rf.write(ld_st.instr.ld_st_reg.rt, dmem[addr]);
           stats.NumRegWrites += 1;
           stats.NumRegReads += 2;
+          stats.NumMemReads++;
           break;
         case STRBI:
           // need to implement
@@ -424,6 +428,7 @@ void execute() {
           addr = ld_st.instr.ld_st_imm.sp + rf[ld_st_instr.ld_st_imm.imm*4];
           dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt]);
           stats.NumRegReads += 2;
+          stats.NumMemWrites++;
           break;
         case LDRBI:
           // need to implement
@@ -433,6 +438,7 @@ void execute() {
           rf.write(ld_st.instr.ld_st_imm.rt, dmem[addr])
           stats.NumRegReads += 1;
           stats.NumRegWrites += 1;
+          stats.NumMemReads++;
           break;
         case STRBR:
           // need to implement
@@ -441,6 +447,7 @@ void execute() {
           addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm];
           dmem.write(addr, rf[ld_st.instr.ld_st_reg.rt]);
           stats.NumRegReads += 3;
+          stats.NumMemWrites++;
           break;
         case LDRBR:
           // need to implement
@@ -450,6 +457,7 @@ void execute() {
           rf.write(ld_st.instr.ld_st_reg.rt, dmem[addr])
           stats.NumRegReads += 2;
           stats.NumRegWrites += 1;
+          stats.NumMemReads++;
           break;
       }
       break;
@@ -521,6 +529,7 @@ void execute() {
       // change PC?
       if (checkCondition(cond.instr.b.cond)){
         rf.write(PC_REG, PC + 2 * signExtend8to32ui(cond.instr.b.imm) + 2);
+        stats.numBranches++;
       }
       break;
     case UNCOND:
@@ -528,8 +537,8 @@ void execute() {
       // condition check, and an 11-bit immediate field
       // change PC
       decode(uncond);
-      // if op is 11100 == 28, then its b
       rf.write(PC_REG, PC + 2 * signExtend16to32ui(uncond.instr.b.imm) + 2);
+      stats.numBranches++;
       break;
     case LDM:
       decode(ldm);
