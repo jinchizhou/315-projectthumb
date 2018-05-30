@@ -169,7 +169,7 @@ static int checkCondition(unsigned short cond) {
       }
       break;
     case LS:
-      if (flags.C == 0 && flags.Z == 1) {
+      if (flags.C == 0 || flags.Z == 1) {
         return TRUE;
       }
       break;
@@ -189,7 +189,7 @@ static int checkCondition(unsigned short cond) {
       }
       break;
     case LE:
-      if (flags.Z == 1 && flags.N != flags.V) {
+      if (flags.Z == 1 || flags.N != flags.V) {
         return TRUE;
       }
       break;
