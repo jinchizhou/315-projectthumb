@@ -483,7 +483,7 @@ void execute() {
           // 0001 0101
           list = (misc.instr.push.m<<(n-2)) | misc.instr.push.reg_list;
           // going all the way down first
-          addr = SP - 4*bitCount(list, n);
+          addr = SP - 4*bitCount(list, n) - 4;
           for (i = 0, mask = 1; i < n; i++, mask<<=1){
             if (list&mask) {
               caches.access(addr);
@@ -493,7 +493,11 @@ void execute() {
               stats.numMemWrites += 1;
             }
           }
-          rf.write(SP_REG, SP - 4*bitCount(list, n));
+          //dmem.write(addr, misc.instr.push.m);
+          if (misc.instr.push.m){
+             dmem.write(addr, LR);
+          }
+          rf.write(SP_REG, SP - 4*bitCount(list, n) - 4);
           stats.numRegReads += 1;
           stats.numRegWrites += 1;
           break;
@@ -514,9 +518,10 @@ void execute() {
               stats.numMemReads += 1;
             }
           }
+          rf.write(PC_REG, addr);
           stats.numRegReads += 1;
           stats.numRegWrites += 1;
-          rf.write(SP_REG, SP + 4*bitCount(list, n));
+          rf.write(SP_REG, SP + 4*bitCount(list, n) + 4);
           break;
         case MISC_SUB:
           // functionally complete, needs stats
