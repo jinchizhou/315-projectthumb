@@ -482,8 +482,13 @@ void execute() {
           // gets reg_list of registers that are pushed in form 
           // 0001 0101
           list = (misc.instr.push.m<<(n-2)) | misc.instr.push.reg_list;
+          //list = misc.instr.push.reg_list;
           // going all the way down first
-          addr = SP - 4*bitCount(list, n) - 4;
+          if (misc.instr.push.m){
+             addr = SP - 4*bitCount(list, n) - 4;
+          } else{
+             addr = SP - 4*bitCount(list, n);
+          }
           for (i = 0, mask = 1; i < n; i++, mask<<=1){
             if (list&mask) {
               caches.access(addr);
@@ -497,7 +502,11 @@ void execute() {
           if (misc.instr.push.m){
              dmem.write(addr, LR);
           }
-          rf.write(SP_REG, SP - 4*bitCount(list, n) - 4);
+          if (misc.instr.push.m){
+             rf.write(SP_REG, SP - 4*bitCount(list, n) - 4);
+          } else{
+             rf.write(SP_REG, SP - 4*bitCount(list, n));
+          }
           stats.numRegReads += 1;
           stats.numRegWrites += 1;
           break;
@@ -505,20 +514,25 @@ void execute() {
           // need to implement
           n = 16;
           list = (misc.instr.pop.m<<(n-2)) | misc.instr.pop.reg_list;
+          //list = misc.instr.pop.reg_list;
           addr = SP;
           // is opposite of push bc reading last reg first
+          if (misc.instr.push.m){
+             rf.write(PC_REG, dmem[addr]);
+             addr +=4;
+          }
           for (i = 0, mask = 1; i < n; i++, mask<<=1){
             if (list&mask){
               // access data on stack part of cache?
               caches.access(addr);
               // write to register whatever is in stack address?
-              rf.write(rf[i], rf[addr]);
+              rf.write(rf[i], dmem[addr]);
               addr +=4;
               stats.numRegWrites += 1;
               stats.numMemReads += 1;
             }
           }
-          rf.write(PC_REG, addr);
+          //rf.write(PC_REG, addr);
           stats.numRegReads += 1;
           stats.numRegWrites += 1;
           rf.write(SP_REG, SP + 4*bitCount(list, n) + 4);
