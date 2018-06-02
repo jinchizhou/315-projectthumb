@@ -207,12 +207,13 @@ void execute() {
   Thumb_Types itype;
   // the following counts as a read to PC
   unsigned int pctarget = PC + 2;
+  stats.numRegReads++;
   unsigned int addr;
   int i, n, offset;
   unsigned int list, mask;
   int num1, num2, result, BitCount;
   unsigned int bit;
-
+  
   /* Convert instruction to correct type */
   /* Types are described in Section A5 of the armv7 manual */
   BL_Type blupper(instr);
@@ -237,7 +238,8 @@ void execute() {
 
   // This counts as a write to the PC register
   rf.write(PC_REG, pctarget);
-
+  stats.numRegWrites++;
+  
   itype = decode(ALL_Types(instr));
 
   // CPE 315: The bulk of your work is in the following switch statement
@@ -501,13 +503,14 @@ void execute() {
           //dmem.write(addr, misc.instr.push.m);
           if (misc.instr.push.m){
              dmem.write(addr, LR);
+             stats.numMemWrites += 1;
+             stats.numRegReads ++;
           }
           if (misc.instr.push.m){
              rf.write(SP_REG, SP - 4*bitCount(list, n) - 4);
           } else{
              rf.write(SP_REG, SP - 4*bitCount(list, n));
           }
-          stats.numMemWrites += 1;
           stats.numRegReads += 1;
           stats.numRegWrites += 1;
           break;
@@ -520,6 +523,7 @@ void execute() {
           // is opposite of push bc reading last reg first
           if (misc.instr.push.m){
              rf.write(PC_REG, dmem[addr]);
+             stats.numRegWrites++;
              addr +=4;
           }
           for (i = 0, mask = 1; i < n; i++, mask<<=1){
@@ -562,6 +566,8 @@ void execute() {
       if (checkCondition(cond.instr.b.cond)){
         rf.write(PC_REG, PC + 2 * signExtend8to32ui(cond.instr.b.imm) + 2);
         stats.numBranches++;
+        stats.numRegWrites++;
+        stats.numRegReads++;
       }
       break;
     case UNCOND:
@@ -571,6 +577,9 @@ void execute() {
       decode(uncond);
       rf.write(PC_REG, PC + 2 * signExtend16to32ui(uncond.instr.b.imm) + 2);
       stats.numBranches++;
+      stats.numRegWrites++;
+      stats.numRegReads++;
+      
       break;
     case LDM:
       decode(ldm);
