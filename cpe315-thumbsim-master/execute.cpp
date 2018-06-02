@@ -478,11 +478,11 @@ void execute() {
       switch(misc_ops) {
         case MISC_PUSH:
           // need to implement
-          n = 16;
+          n = 8;
           // gets reg_list of registers that are pushed in form 
           // 0001 0101
-          list = (misc.instr.push.m<<(n-2)) | misc.instr.push.reg_list;
-          //list = misc.instr.push.reg_list;
+          //list = (misc.instr.push.m<<(n-2)) | misc.instr.push.reg_list;
+          list = misc.instr.push.reg_list;
           // going all the way down first
           if (misc.instr.push.m){
              addr = SP - 4*bitCount(list, n) - 4;
@@ -512,9 +512,9 @@ void execute() {
           break;
         case MISC_POP:
           // need to implement
-          n = 16;
-          list = (misc.instr.pop.m<<(n-2)) | misc.instr.pop.reg_list;
-          //list = misc.instr.pop.reg_list;
+          n = 8;
+          //list = (misc.instr.pop.m<<(n-2)) | misc.instr.pop.reg_list;
+          list = misc.instr.pop.reg_list;
           addr = SP;
           // is opposite of push bc reading last reg first
           if (misc.instr.push.m){
@@ -526,7 +526,7 @@ void execute() {
               // access data on stack part of cache?
               caches.access(addr);
               // write to register whatever is in stack address?
-              rf.write(rf[i], dmem[addr]);
+              rf.write(i, dmem[addr]);
               addr +=4;
               stats.numRegWrites += 1;
               stats.numMemReads += 1;
