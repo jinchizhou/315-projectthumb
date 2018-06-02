@@ -213,7 +213,7 @@ void execute() {
   unsigned int list, mask;
   int num1, num2, result, BitCount;
   unsigned int bit;
-  
+  int direction = 0; 
   /* Convert instruction to correct type */
   /* Types are described in Section A5 of the armv7 manual */
   BL_Type blupper(instr);
@@ -562,24 +562,45 @@ void execute() {
       // this should work for all your conditional branches.
       // needs stats
       // no idea which stats
-      // change PC?
-      if (checkCondition(cond.instr.b.cond)){
-        rf.write(PC_REG, PC + 2 * signExtend8to32ui(cond.instr.b.imm) + 2);
-        stats.numBranches++;
-        stats.numRegWrites++;
-        stats.numRegReads++;
+      if ((PC + 2 * signExtend8to32ui(cond.instr.b.imm) + 2) > PC){
+         // forward branch
+         direction = 1;
       }
+      
+      if (checkCondition(cond.instr.b.cond)){
+         // taken
+         if (direction){
+            stats.numForwardBranchesTaken++;
+         } else{
+            stats.numBackwardBranchesTaken++;
+         }
+         rf.write(PC_REG, PC + 2 * signExtend8to32ui(cond.instr.b.imm) + 2);
+         stats.numBranches++;
+         stats.numRegWrites++;
+         stats.numRegReads++;
+      } else{
+         if (direction){
+            stats.numForwardBranchesNotTaken++;
+         } else{
+            stats.numBackwardBranchesNotTaken++;
+         }
+      }
+      direction = 0;
       break;
     case UNCOND:
       // Essentially the same as the conditional branches, but with no
       // condition check, and an 11-bit immediate field
       // change PC
       decode(uncond);
+      /*if (PC > (PC + 2 * signExtend16to32ui(uncond.instr.b.imm) + 2)){
+         stats.numBackwardBranchesTaken++;
+      } else{
+         stats.numForwardBranchesTaken++;
+      }*/
       rf.write(PC_REG, PC + 2 * signExtend16to32ui(uncond.instr.b.imm) + 2);
       stats.numBranches++;
       stats.numRegWrites++;
       stats.numRegReads++;
-      
       break;
     case LDM:
       decode(ldm);
