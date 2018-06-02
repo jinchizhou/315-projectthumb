@@ -6,3 +6,9 @@ run:
 
 clean:
 	rm -rf ./*.o ./thumbsim
+
+stats:
+	 ./thumbsim -i -d -s -f inputs/fib.sim
+
+
+

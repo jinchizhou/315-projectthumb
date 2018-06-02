@@ -507,6 +507,7 @@ void execute() {
           } else{
              rf.write(SP_REG, SP - 4*bitCount(list, n));
           }
+          stats.numMemWrites += 1;
           stats.numRegReads += 1;
           stats.numRegWrites += 1;
           break;
@@ -532,7 +533,7 @@ void execute() {
               stats.numMemReads += 1;
             }
           }
-          //rf.write(PC_REG, addr);
+          stats.numMemReads += 1;
           stats.numRegReads += 1;
           stats.numRegWrites += 1;
           rf.write(SP_REG, SP + 4*bitCount(list, n) + 4);
