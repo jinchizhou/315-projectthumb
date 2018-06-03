@@ -110,6 +110,42 @@ void Memory<Data32, Data32>::dump(DataType dt) const {
 // "misses" counters.
 bool Cache::access(unsigned int address) {
   int tag = 0;
+  // confused with how to get instance of Caches
+  Caches c;
+  for(int i = 0; i < c.size; i++){
+    Cache temp = c.caches[i];
+    int numOfEntries = (temp.size)/(temp.blocksize);
+    double entriesIndexBits;
+    entriesIndexBits = log2(numOfEntries);
+    // isnt this the tag?
+    unsigned int addressTemp = address;
+    unsigned int blockindex = address;
+    addressTemp >>= entriesIndexBits;
+    /*
+    while(entriesIndexBits > 0){
+      addressTemp = addressTemp >> 1;
+      entriesIndexBits--;
+    }
+    */
+    // get index by throwing out the extra bits
+    blockindex <<= (32 - entriesIndexBits);
+    blockindex >>= (32 - entriesIndexBits);
+
+    // check to see if tag exists in current cache
+    // the further the cache, the less blocks, less indices, bigger tag?
+    if(temp.entries[blockindex] == addressTemp){
+       // exists in cache
+       temp.hits++;
+       return true;
+    } else{
+       // update cache to contain this tag
+       temp.entries[blockindex] = addressTemp;
+       temp.misses++;
+    }
+  }
+
+/*bool Cache::access(unsigned int address) {
+  int tag = 0;
   Caches c;
   for(int i = 0; i < Caches->size; i++){
     Cache temp = [i];
@@ -122,6 +158,7 @@ bool Cache::access(unsigned int address) {
     }
     
   }
+*/
 
   return false;
 }
