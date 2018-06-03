@@ -410,6 +410,7 @@ void execute() {
           dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt]);
           stats.numRegReads += 2;
           stats.numMemWrites++;
+          caches.access(addr);
           break;
         case LDRI:
           // functionally complete, needs stats
@@ -418,6 +419,7 @@ void execute() {
           stats.numRegReads += 1;
           stats.numRegWrites += 1;
           stats.numMemReads++;
+          caches.access(addr);
           break;
         case STRR:
           // need to implement
@@ -425,6 +427,7 @@ void execute() {
           dmem.write(addr, rf[ld_st.instr.ld_st_reg.rt]);
           stats.numRegReads += 3;
           stats.numMemWrites++;
+          caches.access(addr);
           break;
         case LDRR:
           // need to implement
@@ -433,6 +436,7 @@ void execute() {
           stats.numRegWrites += 1;
           stats.numRegReads += 2;
           stats.numMemReads++;
+          caches.access(addr);
           break;
         case STRBI:
           // need to implement
@@ -443,6 +447,7 @@ void execute() {
           dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt]);
           stats.numRegReads += 2;
           stats.numMemWrites++;
+          caches.access(addr);
           break;
         case LDRBI:
           // need to implement
@@ -453,6 +458,7 @@ void execute() {
           stats.numRegReads += 1;
           stats.numRegWrites += 1;
           stats.numMemReads++;
+          caches.access(addr);
           break;
         case STRBR:
           // need to implement
@@ -462,6 +468,7 @@ void execute() {
           dmem.write(addr, rf[ld_st.instr.ld_st_reg.rt]);
           stats.numRegReads += 3;
           stats.numMemWrites++;
+          caches.access(addr);
           break;
         case LDRBR:
           // need to implement
@@ -472,6 +479,7 @@ void execute() {
           stats.numRegReads += 2;
           stats.numRegWrites += 1;
           stats.numMemReads++;
+          caches.access(addr);
           break;
       }
       break;
@@ -505,6 +513,7 @@ void execute() {
              dmem.write(addr, LR);
              stats.numMemWrites += 1;
              stats.numRegReads ++;
+             caches.access(addr)
           }
           if (misc.instr.push.m){
              rf.write(SP_REG, SP - 4*bitCount(list, n) - 4);
@@ -523,6 +532,7 @@ void execute() {
           // is opposite of push bc reading last reg first
           if (misc.instr.push.m){
              rf.write(PC_REG, dmem[addr]);
+             caches.access(addr);
              stats.numRegWrites++;
              addr +=4;
           }
