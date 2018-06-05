@@ -513,7 +513,7 @@ void execute() {
              dmem.write(addr, LR);
              stats.numMemWrites += 1;
              stats.numRegReads ++;
-             caches.access(addr)
+             caches.access(addr);
           }
           if (misc.instr.push.m){
              rf.write(SP_REG, SP - 4*bitCount(list, n) - 4);

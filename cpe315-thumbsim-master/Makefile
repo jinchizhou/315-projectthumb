@@ -11,4 +11,6 @@ stats:
 	 ./thumbsim -i -d -s -f inputs/fib.sim
 
 
+cache:
+	 ./thumbsim -c256 -i -d -s -f inputs/fib.sim
 
