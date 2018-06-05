@@ -12,5 +12,5 @@ stats:
 
 
 cache:
-	 ./thumbsim -c256 -i -d -s -f inputs/fib.sim
+	 ./thumbsim -c 256 -i -d -s -f inputs/fib.sim
 

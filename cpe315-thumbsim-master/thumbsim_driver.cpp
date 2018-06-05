@@ -1,4 +1,5 @@
 #include "thumbsim.hpp"
+#include <iostream>
 
 template<>
 void Memory<Data8, Data32>::write(const unsigned int addr, const Data32 data) {
@@ -109,21 +110,44 @@ void Memory<Data32, Data32>::dump(DataType dt) const {
 // cache size in blocks). You should also update the "hits" and
 // "misses" counters.
 bool Cache::access(unsigned int address) {
-  // confused with how to get instance of Caches
-  int numOfEntries = (size/blocksize);
-  unsigned int numbitsforentries = (unsigned int)log2(numOfEntries);
+  // least sig: byte select, index, then tag
+  //cout << "Size is " << size << "\n";
+  //cout << "Blocksize is " << blocksize << "\n";
+  
+  unsigned int numbitsentries = (unsigned int)log2(size);
+  
+  //cout << "Number of bits for size is " << numbitsforentries << "\n";
+  unsigned int numbitsbyteselect = (unsigned int)log2(blocksize);
+  //cout << "Number of bits for blocksize is " << numbitsforbyteselect << "\n";
   unsigned int tag = address;
   unsigned int index = address;
-  tag = tag >> numbitsforentries;
-  unsigned int numbitsfortag = 32 - numbitsforentries;
   
-  index <<= numbitsfortag;
-  index >>= numbitsfortag;
+  tag = tag >> (numbitsentries + numbitsbyteselect);
+  cout << "Number of bits for size is " << numbitsentries << "\n";
+  cout << "Number of bits for blocksize is " << numbitsbyteselect << "\n";
+  
+  unsigned int numbitsfortag = 32 - (numbitsentries + numbitsbyteselect);
+  //unsigned int numbitsfortag = 30;
+  std::cout << std::dec << "Number of bits for tag is " << numbitsfortag << "\n";
+  index >>= numbitsbyteselect;
+  std::cout << std::dec << "Secondary index is " << index << "\n";
+  unsigned int numbitsforeb = 32 - numbitsentries;
+  std::cout << std::dec << "Number of bits for eb " << numbitsforeb << "\n";
+  index <<= numbitsforeb;
+  index >>= numbitsforeb;
+  std::cout << std::dec << "Final index is " << index << "\n";
+  std::cout << std::dec << "Final tag is " << tag << "\n";
+  std::cout << std::dec << "Entries[index]  is " << entries[index] << "\n";
+  
+  cout << "hits is " << hits << "\n";
+  //exit(1);
   if(entries[index] == tag){
      hits++;
      return true;
+  } else{
+     entries[index] = tag;
+     misses++;
   }
-  misses++;
   return false;
   /*
   if (entries[index] == tag)
@@ -177,7 +201,6 @@ bool Cache::access(unsigned int address) {
   }
 */
 
-  return false;
 }
 
 void Stats::print() {
