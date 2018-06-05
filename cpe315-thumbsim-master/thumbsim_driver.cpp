@@ -111,14 +111,15 @@ void Memory<Data32, Data32>::dump(DataType dt) const {
 bool Cache::access(unsigned int address) {
   // confused with how to get instance of Caches
   int numOfEntries = (size/blocksize);
-  unsigned int entriesIndexBits = (unsigned int)log2(numOfEntries);
+  unsigned int numbitsforentries = (unsigned int)log2(numOfEntries);
   unsigned int tag = address;
-  unsigned int blockindex = address;
-  tag = tag >> entriesIndexBits;
-  
-  blockindex <<= (32 - entriesIndexBits);
-  blockindex >>= (32 - entriesIndexBits);
-  if(entries[blockindex] == tag){
+  unsigned int index = address;
+  tag = tag >> numbitsforentries;
+  unsigned int numbitsfortag = 32 - numbitsforentries;
+
+  index <<= numbitsfortag;
+  index >>= numbitsfortag;
+  if(entries[index] == tag){
      hits++;
      return true;
   }

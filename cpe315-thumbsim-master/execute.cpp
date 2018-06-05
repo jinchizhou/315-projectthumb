@@ -498,10 +498,11 @@ void execute() {
              addr = SP - 4*bitCount(list, n) - 4;
           } else{
              addr = SP - 4*bitCount(list, n);
-          }
+          } 
+          //addr = SP - 4*bitCount(list, n);
           for (i = 0, mask = 1; i < n; i++, mask<<=1){
             if (list&mask) {
-              caches.access(addr);
+              //caches.access(addr);
               dmem.write(addr, rf[i]);
               addr +=4;
               stats.numRegReads += 1;
@@ -513,13 +514,15 @@ void execute() {
              dmem.write(addr, LR);
              stats.numMemWrites += 1;
              stats.numRegReads ++;
-             caches.access(addr);
+             //caches.access(addr);
           }
+          
           if (misc.instr.push.m){
              rf.write(SP_REG, SP - 4*bitCount(list, n) - 4);
           } else{
              rf.write(SP_REG, SP - 4*bitCount(list, n));
-          }
+          } 
+          //rf.write(SP_REG, SP - 4*bitCount(list, n));
           stats.numRegReads += 1;
           stats.numRegWrites += 1;
           break;
