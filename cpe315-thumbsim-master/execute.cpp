@@ -496,9 +496,9 @@ void execute() {
           list = misc.instr.push.reg_list;
           // going all the way down first
           if (misc.instr.push.m){
-             addr = SP + 4*bitCount(list, n) + 4;
+             addr = SP - 4*bitCount(list, n) - 4;
           } else{
-             addr = SP + 4*bitCount(list, n);
+             addr = SP - 4*bitCount(list, n);
           }
           //addr = SP - 4*bitCount(list, n);
           for (i = 0, mask = 1; i < n; i++, mask<<=1){
@@ -506,7 +506,7 @@ void execute() {
               cout << "The address at start is: " << addr << "\n";
               caches.access(addr);
               dmem.write(addr, rf[i]);
-              addr -=4;
+              addr +=4;
               stats.numRegReads += 1;
               stats.numMemWrites += 1;
             }
@@ -521,9 +521,9 @@ void execute() {
           cout << "End address is: " << addr;
           //exit(1);
           if (misc.instr.push.m){
-             rf.write(SP_REG, SP + 4*bitCount(list, n) + 4);
+             rf.write(SP_REG, SP - 4*bitCount(list, n) - 4);
           } else{
-             rf.write(SP_REG, SP + 4*bitCount(list, n));
+             rf.write(SP_REG, SP - 4*bitCount(list, n));
           } 
           //rf.write(SP_REG, SP - 4*bitCount(list, n));
           stats.numRegReads += 1;
@@ -543,7 +543,7 @@ void execute() {
               caches.access(addr);
               // write to register whatever is in stack address?
               rf.write(i, dmem[addr]);
-              addr -=4;
+              addr +=4;
               stats.numRegWrites += 1;
               stats.numMemReads += 1;
             }
@@ -552,10 +552,10 @@ void execute() {
              rf.write(PC_REG, dmem[addr]);
              caches.access(addr);
              stats.numRegWrites++;
-             addr -=4;
-             rf.write(SP_REG, SP - 4*bitCount(list, n) - 4);
+             addr +=4;
+             rf.write(SP_REG, SP + 4*bitCount(list, n) + 4);
           } else{
-             rf.write(SP_REG, SP - 4*bitCount(list, n));
+             rf.write(SP_REG, SP + 4*bitCount(list, n));
           }
           stats.numMemReads += 1;
           stats.numRegReads += 1;

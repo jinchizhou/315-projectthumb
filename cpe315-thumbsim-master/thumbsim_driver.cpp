@@ -119,7 +119,7 @@ bool Cache::access(unsigned int address) {
   unsigned int numbitsbyteselect = (unsigned int)log2(blocksize);
   unsigned int tag = address;
   unsigned int index = address;
-  std::cout << std::dec << "Address is  " << address << "\n";
+  cout << "Address is  " << address << "\n";
   
   tag = tag >> (numbitsentries + numbitsbyteselect);
   cout << "Number of bits for size is " << numbitsentries << "\n";
@@ -139,12 +139,12 @@ bool Cache::access(unsigned int address) {
   std::cout << std::dec << "Entries[index]  is " << entries[index] << "\n";
   
   cout << "hits is " << hits << "\n";
-  exit(1);
+  //exit(1);
   if(entries[index] == tag){
      hits++;
      return true;
   } else{
-     //entries[index] = tag;
+     entries[index] = tag;
      misses++;
   }
   return false;
