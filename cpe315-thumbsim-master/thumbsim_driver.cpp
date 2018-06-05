@@ -116,7 +116,7 @@ bool Cache::access(unsigned int address) {
   unsigned int index = address;
   tag = tag >> numbitsforentries;
   unsigned int numbitsfortag = 32 - numbitsforentries;
-
+  
   index <<= numbitsfortag;
   index >>= numbitsfortag;
   if(entries[index] == tag){
