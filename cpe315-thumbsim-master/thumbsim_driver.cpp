@@ -111,16 +111,15 @@ void Memory<Data32, Data32>::dump(DataType dt) const {
 // "misses" counters.
 bool Cache::access(unsigned int address) {
   // least sig: byte select, index, then tag
-  //cout << "Size is " << size << "\n";
-  //cout << "Blocksize is " << blocksize << "\n";
+  cout << "Size is " << size << "\n";
+  cout << "Blocksize is " << blocksize << "\n";
   
   unsigned int numbitsentries = (unsigned int)log2(size);
   
-  //cout << "Number of bits for size is " << numbitsforentries << "\n";
   unsigned int numbitsbyteselect = (unsigned int)log2(blocksize);
-  //cout << "Number of bits for blocksize is " << numbitsforbyteselect << "\n";
   unsigned int tag = address;
   unsigned int index = address;
+  std::cout << std::dec << "Address is  " << address << "\n";
   
   tag = tag >> (numbitsentries + numbitsbyteselect);
   cout << "Number of bits for size is " << numbitsentries << "\n";
@@ -140,12 +139,12 @@ bool Cache::access(unsigned int address) {
   std::cout << std::dec << "Entries[index]  is " << entries[index] << "\n";
   
   cout << "hits is " << hits << "\n";
-  //exit(1);
+  exit(1);
   if(entries[index] == tag){
      hits++;
      return true;
   } else{
-     entries[index] = tag;
+     //entries[index] = tag;
      misses++;
   }
   return false;
