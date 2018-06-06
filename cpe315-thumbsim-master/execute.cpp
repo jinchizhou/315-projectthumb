@@ -494,37 +494,43 @@ void execute() {
           // 0001 0101
           //list = (misc.instr.push.m<<(n-2)) | misc.instr.push.reg_list;
           list = misc.instr.push.reg_list;
+          addr = SP;
           // going all the way down first
-          if (misc.instr.push.m){
+          /*if (misc.instr.push.m){
              addr = SP - 4*bitCount(list, n) - 4;
           } else{
              addr = SP - 4*bitCount(list, n);
-          }
+          } */
           //addr = SP - 4*bitCount(list, n);
           for (i = 0, mask = 1; i < n; i++, mask<<=1){
             if (list&mask) {
               cout << "The address at start is: " << addr << "\n";
+              addr -= 4;
               caches.access(addr);
               dmem.write(addr, rf[i]);
-              addr +=4;
+              //addr +=4;
               stats.numRegReads += 1;
               stats.numMemWrites += 1;
             }
           }
           //dmem.write(addr, misc.instr.push.m);
           if (misc.instr.push.m){
+             addr -= 4;
              dmem.write(addr, LR);
              stats.numMemWrites ++;
              stats.numRegReads ++;
              caches.access(addr);
           }
+          rf.write(SP_REG, addr);
           cout << "End address is: " << addr;
           //exit(1);
+          /*
           if (misc.instr.push.m){
              rf.write(SP_REG, SP - 4*bitCount(list, n) - 4);
           } else{
              rf.write(SP_REG, SP - 4*bitCount(list, n));
           } 
+          */
           //rf.write(SP_REG, SP - 4*bitCount(list, n));
           stats.numRegReads += 1;
           stats.numRegWrites += 1;
@@ -536,8 +542,13 @@ void execute() {
           //list = (misc.instr.pop.m<<(n-2)) | misc.instr.pop.reg_list;
           list = misc.instr.pop.reg_list;
           addr = SP;
-          // is opposite of push bc reading last reg first
-          for (i = 0, mask = 1; i < n; i++, mask<<=1){
+          if (misc.instr.pop.m){
+             caches.access(addr);
+             rf.write(PC_REG, dmem[addr]);
+             stats.numRegWrites++;
+             addr +=4;
+          }
+          for (i = 7, mask = 128; i >= 0; i--, mask>>=1){
             if (list&mask){
               // access data on stack part of cache?
               caches.access(addr);
@@ -548,6 +559,8 @@ void execute() {
               stats.numMemReads += 1;
             }
           }
+          rf.write(SP_REG, addr);
+          /*
           if (misc.instr.push.m){
              rf.write(PC_REG, dmem[addr]);
              caches.access(addr);
@@ -557,6 +570,8 @@ void execute() {
           } else{
              rf.write(SP_REG, SP + 4*bitCount(list, n));
           }
+          */
+
           stats.numMemReads += 1;
           stats.numRegReads += 1;
           stats.numRegWrites += 1;
