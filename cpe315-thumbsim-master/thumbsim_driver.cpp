@@ -114,9 +114,13 @@ bool Cache::access(unsigned int address) {
   std::cout << std::dec << "Size is " << size << "\n";
   //cout << "Size is " << size << "\n";
   cout << "Blocksize is " << blocksize << "\n";
-  
-  unsigned int numbitsentries = (unsigned int)log2(size);
-  
+  /*if (size != 256){
+     cout << size;
+     exit(1);
+  }
+  */
+  //unsigned int entries = size / blocksize;
+  unsigned int numbitsentries = (unsigned int)log2((int)size/blocksize);
   unsigned int numbitsbyteselect = (unsigned int)log2(blocksize);
   unsigned int tag = address;
   unsigned int index = address;
@@ -124,21 +128,20 @@ bool Cache::access(unsigned int address) {
   std::cout << std::hex << "Address in hex is " << address << "\n";
   
   tag = tag >> (numbitsentries + numbitsbyteselect);
+  //tag = tag >> (numbitsentries);
   cout << "Number of bits for size is " << numbitsentries << "\n";
   cout << "Number of bits for blocksize is " << numbitsbyteselect << "\n";
   
+  //unsigned int numbitsfortag = 32 - (numbitsentries);
   unsigned int numbitsfortag = 32 - (numbitsentries + numbitsbyteselect);
   std::cout << std::dec << "Number of bits for tag is " << numbitsfortag << "\n";
-  //cout << "Number of bits for tag is " << numbitsfortag << "\n";
   index >>= numbitsbyteselect;
   //std::cout << std::dec << "Secondary index is " << index << "\n";
   unsigned int numbitsforeb = 32 - numbitsentries;
   std::cout << std::dec << "Number of bits for eb " << numbitsforeb << "\n";
   index <<= numbitsforeb;
   index >>= numbitsforeb;
-  //std::cout << std::dec << "Final index is " << index << "\n";
-  //std::cout << std::dec << "Final tag is " << tag << "\n";
-  //std::cout << std::dec << "Entries[index]  is " << entries[index] << "\n";
+
   std::cout << std::hex << "Final index is " << index << "\n";
   std::cout << std::hex << "Final tag is " << tag << "\n";
   std::cout << std::hex << "Entries[index]  is " << entries[index] << "\n";
