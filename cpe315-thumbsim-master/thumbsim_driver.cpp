@@ -111,9 +111,9 @@ void Memory<Data32, Data32>::dump(DataType dt) const {
 // "misses" counters.
 bool Cache::access(unsigned int address) {
   // least sig: byte select, index, then tag
-  std::cout << std::dec << "Size is " << size << "\n";
+  //std::cout << std::dec << "Size is " << size << "\n";
   //cout << "Size is " << size << "\n";
-  cout << "Blocksize is " << blocksize << "\n";
+  //cout << "Blocksize is " << blocksize << "\n";
   /*if (size != 256){
      cout << size;
      exit(1);
@@ -124,28 +124,28 @@ bool Cache::access(unsigned int address) {
   unsigned int numbitsbyteselect = (unsigned int)log2(blocksize);
   unsigned int tag = address;
   unsigned int index = address;
-  cout << "Address is  " << address << "\n";
-  std::cout << std::hex << "Address in hex is " << address << "\n";
+  //cout << "Address is  " << address << "\n";
+  //std::cout << std::hex << "Address in hex is " << address << "\n";
   
   tag = tag >> (numbitsentries + numbitsbyteselect);
   //tag = tag >> (numbitsentries);
-  cout << "Number of bits for size is " << numbitsentries << "\n";
-  cout << "Number of bits for blocksize is " << numbitsbyteselect << "\n";
+  //cout << "Number of bits for size is " << numbitsentries << "\n";
+  //cout << "Number of bits for blocksize is " << numbitsbyteselect << "\n";
   
   //unsigned int numbitsfortag = 32 - (numbitsentries);
   unsigned int numbitsfortag = 32 - (numbitsentries + numbitsbyteselect);
-  std::cout << std::dec << "Number of bits for tag is " << numbitsfortag << "\n";
+  //std::cout << std::dec << "Number of bits for tag is " << numbitsfortag << "\n";
   index >>= numbitsbyteselect;
   //std::cout << std::dec << "Secondary index is " << index << "\n";
   unsigned int numbitsforeb = 32 - numbitsentries;
-  std::cout << std::dec << "Number of bits for eb " << numbitsforeb << "\n";
+  //std::cout << std::dec << "Number of bits for eb " << numbitsforeb << "\n";
   index <<= numbitsforeb;
   index >>= numbitsforeb;
 
-  std::cout << std::hex << "Final index is " << index << "\n";
+  /*std::cout << std::hex << "Final index is " << index << "\n";
   std::cout << std::hex << "Final tag is " << tag << "\n";
   std::cout << std::hex << "Entries[index]  is " << entries[index] << "\n";
-  
+  */
   //cout << "hits is " << hits << "\n";
   /*if(hits == 108){
     exit(1);
@@ -157,7 +157,7 @@ bool Cache::access(unsigned int address) {
      return true;
   } else{
      entries[index] = tag;
-     cout << "Number of hits is " << hits << "\n";
+     //cout << "Number of hits is " << hits << "\n";
      misses++;
   }
   //exit(1);
